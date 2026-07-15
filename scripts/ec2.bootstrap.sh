@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-APP_DIR=${1:-'/opt/expense-tracker'}
+APP_DIR="${1:-'/opt/expense-tracker'}"
 
 echo "Updating packages..."
 sudo apt update
@@ -14,8 +14,8 @@ sudo apt install -y \
     ca-certificates \
     gnupg
 
-sudo mkdir -p "APP_DIR"
-sudo chown -R "ubuntu:ubuntu" "APP_DIR"
+sudo mkdir -p "$APP_DIR"
+sudo chown -R "ubuntu:ubuntu" "$APP_DIR"
 
 if command -v docker >/dev/null 2>&1; then
     echo "Docker is already installed: $(docker --version)"
