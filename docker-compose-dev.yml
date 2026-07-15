@@ -1,0 +1,50 @@
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - expense-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+    depends_on:
+      - mongo
+    networks:
+      - expense-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+
+    ports:
+      - '5173:5173'
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - expense-net
+
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
+
+networks:
+  expense-net:
+    driver: bridge
