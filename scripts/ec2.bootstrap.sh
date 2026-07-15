@@ -14,6 +14,9 @@ sudo apt install -y \
     ca-certificates \
     gnupg
 
+sudo -p mkdir APP_DIR
+sudo chown -R "ubuntu:ubuntu" "APP_DIR"
+
 if command -v docker >/dev/null 2>&1; then
     echo "Docker is already installed: $(docker --version)"
 else
