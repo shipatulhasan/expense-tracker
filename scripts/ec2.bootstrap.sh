@@ -57,5 +57,3 @@ else
     echo "Docker installation completed."
     echo "⚠️  Log out and back in (or reboot) for the docker group change to take effect."
 fi
-
-sudo reboot
