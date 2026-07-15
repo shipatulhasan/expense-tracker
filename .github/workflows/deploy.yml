@@ -1,0 +1,86 @@
+name: Expense tracker deployment with docker
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Configure ec2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH: ${{ secrets.EC2_SSH }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          echo "$EC2_SSH" > ~/.ssh/expense-tracker.pem
+          chmod 400 ~/.ssh/expense-tracker.pem
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: Bootstrap Ec2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/expense-tracker.pem "$EC2_USER@$EC2_HOST" \
+          "bash -s -- '$APP_DIR'" < scripts/ec2.bootstrap.sh
+
+      - name: Push full source to ec2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+        run: |
+          set -euo pipefail
+          rsync -az --delete \
+          --exclude '.git' \
+          --exclude ".github" \
+          --exclude "node_modules" \
+          --exclude ".env" \
+          --exclude ".env.local" \
+          --exclude ".DS_Store" \
+          -e "ssh -i ~/.ssh/expense-tracker.pem" \
+          ./ "$EC2_USER@$EC2_HOST:$APP_DIR/"
+
+      - name: add Env
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+          APP_ENV: ${{ secrets.APP_ENV }}
+          WEB_ENV: ${{ secrets.WEB_ENV }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/expense-tracker.pem "$EC2_USER@$EC2_HOST" << EOF
+          cat > "$APP_DIR/.env" << 'ENV_API'
+          $APP_ENV
+          ENV_API
+
+          cat > "$APP_DIR/frontend/.env" << 'ENV_WEB'
+          $WEB_ENV
+          ENV_WEB
+
+          EOF
+
+      - name: Deploy in docker
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/expense-tracker.pem "$EC2_USER@$EC2_HOST" << EOF
+          cd "$APP_DIR"
+          docker compose -f docker-compose.yml up -d --build
+          docker image prune -af
+          docker builder prune -af

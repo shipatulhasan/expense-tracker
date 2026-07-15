@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import './styles.css'
 
-const API_BASE = 'http://localhost:5000/api'
+const API_BASE = import.meta.process.env.VITE_APP_URL
 const categories = [
   'Food',
   'Transport',
