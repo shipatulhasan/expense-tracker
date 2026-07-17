@@ -1,78 +1,60 @@
-````markdown
 # Expense Tracker
 
-A modern **Expense Tracker** built with the **MERN Stack**, fully containerized with **Docker**, and automatically deployed to **AWS EC2** using a **GitHub Actions CI/CD pipeline**.
+A full-stack **Expense Tracker** built with the **MERN Stack**, containerized using **Docker**, and automatically deployed to an **AWS EC2** instance using **GitHub Actions CI/CD**.
 
-This project demonstrates modern full-stack development, containerization, and production deployment practices.
-
----
-
-## 🚀 Tech Stack
-
-### Frontend
-- React.js
-- Vite
-- NGINX
-- CSS
-
-### Backend
-- Node.js
-- Express.js
-
-### Database
-- MongoDB
-
-### DevOps
-- Docker
-- Docker Compose
-- GitHub Actions
-- AWS EC2
-- SSH
-- rsync
+This project was built to learn Docker, Docker Compose, AWS deployment, and CI/CD automation while developing a production-like full-stack application.
 
 ---
 
-## ✨ Features
+## 🛠️ Tech Stack
 
-- Create, edit and delete expenses
-- Search expenses by title
+| Category | Technologies |
+|----------|--------------|
+| **Frontend** | React.js, Vite, NGINX |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB |
+| **DevOps** | Docker, Docker Compose, GitHub Actions, AWS EC2, SSH, rsync |
+---
+
+# Features
+
+- Add, edit and delete expenses
+- Search by title
 - Filter by category
-- Filter by date range
+- Filter by date
 - Expense summary dashboard
 - Category-wise analytics
-- Export expenses as CSV
+- CSV export
 - Responsive UI
-- Dockerized development and production environments
+- Dockerized development & production setup
 - Automated deployment to AWS EC2
 
 ---
 
-## 🏗️ Architecture
+# Architecture
 
 ```text
-                        GitHub Repository
-                               │
-                        Push to main
-                               │
-                     GitHub Actions CI/CD
-                               │
-                        SSH + rsync Deploy
-                               │
-                           AWS EC2
-                               │
-                    Docker Compose Stack
-                               │
-      ┌────────────────┬─────────────────┬────────────────┐
-      │                │                 │
-  Frontend          Backend          MongoDB
-   (NGINX)           Express          Database
-      │
-      └──────────── REST API ─────────────►
-````
+                    GitHub Repository
+                           │
+                    Push to main
+                           │
+                  GitHub Actions CI/CD
+                           │
+                     SSH + rsync
+                           │
+                        AWS EC2
+                           │
+                   Docker Compose
+                           │
+        ┌────────────┬─────────────┬─────────────┐
+        │            │             │
+    Frontend      Backend      MongoDB
+     (NGINX)      Express
+```
 
 ---
 
-## 📁 Project Structure
+# Project Structure
 
 ```text
 .
@@ -98,25 +80,25 @@ This project demonstrates modern full-stack development, containerization, and p
 ├── scripts
 │   └── ec2.bootstrap.sh
 │
+├── .github
+│   └── workflows
+│       └── deploy.yml
+│
 ├── docker-compose.yml
-├── docker-compose-dev.yml
-└── .github
-    └── workflows
-        └── deploy.yml
+└── docker-compose-dev.yml
 ```
 
 ---
 
-## ⚙️ Getting Started
+# Local Development
 
-### Clone the Repository
+Start the development environment with hot reload.
 
 ```bash
-git clone https://github.com/<your-username>/expense-tracker.git
-cd expense-tracker
+docker compose -f docker-compose-dev.yml up
 ```
 
-### Run with Docker
+Run the production setup locally.
 
 ```bash
 docker compose up -d --build
@@ -128,47 +110,26 @@ Open the application:
 http://localhost
 ```
 
-### Development Mode
-
-```bash
-docker compose -f docker-compose-dev.yml up --build
-```
-
 ---
 
-## 🐳 Docker Services
+# Docker Services
 
-| Service  | Description                       |
-| -------- | --------------------------------- |
+| Service | Description |
+|----------|-------------|
 | frontend | React application served by NGINX |
-| backend  | Express.js REST API               |
-| mongo    | MongoDB database                  |
+| backend | Express REST API |
+| mongo | MongoDB database |
 
 ---
 
-## 📡 API Endpoints
+# CI/CD Workflow
 
-| Method | Endpoint             | Description      |
-| ------ | -------------------- | ---------------- |
-| GET    | `/api/health`        | Health Check     |
-| GET    | `/api/expenses`      | Get all expenses |
-| POST   | `/api/expenses`      | Create expense   |
-| PUT    | `/api/expenses/:id`  | Update expense   |
-| DELETE | `/api/expenses/:id`  | Delete expense   |
-| POST   | `/api/expenses/seed` | Seed sample data |
-
----
-
-# 🚀 CI/CD Pipeline
-
-Every push to the **main** branch automatically deploys the latest version to an **AWS EC2** instance using **GitHub Actions**.
-
-### Workflow
+Every push to the **main** branch automatically deploys the latest version to the AWS EC2 server.
 
 ```text
 Developer
     │
-git push origin main
+git push
     │
 GitHub Actions
     │
@@ -178,63 +139,61 @@ Configure SSH
     │
 Bootstrap EC2
     │
-Sync Files (rsync)
+Sync Project (rsync)
     │
-Generate .env Files
+Create .env Files
     │
 Docker Compose Build
     │
 Restart Containers
     │
-Production Updated
+Deployment Complete
 ```
 
-### Deployment Steps
+---
 
-The GitHub Actions workflow performs the following tasks:
+# What I Learned
 
-* Checks out the latest source code
-* Configures SSH authentication
-* Bootstraps the EC2 instance
-* Synchronizes the project using `rsync`
-* Generates backend and frontend `.env` files from GitHub Secrets
-* Builds Docker images on the EC2 instance
-* Starts or updates containers with Docker Compose
-* Removes unused Docker images and builder cache
+### Docker & Docker Compose
+
+- Building multi-container applications
+- Managing development and production environments
+- Networking, volumes, and container lifecycle
+- Running React, Node.js, and MongoDB together
+
+### AWS & GitHub Actions
+
+- Deploying Docker applications to AWS EC2
+- Automating deployments with GitHub Actions
+- Managing environment variables using GitHub Secrets
+- SSH-based deployment with `rsync` and Docker Compose
 
 ---
 
-## 🔐 GitHub Secrets
+# Troubleshooting
 
-| Secret     | Description                    |
-| ---------- | ------------------------------ |
-| `EC2_HOST` | EC2 public IP or hostname      |
-| `EC2_USER` | EC2 SSH username               |
-| `EC2_SSH`  | Private SSH key                |
-| `APP_DIR`  | Application directory on EC2   |
-| `APP_ENV`  | Backend environment variables  |
-| `WEB_ENV`  | Frontend environment variables |
+During development, I encountered and resolved several real-world issues:
+
+- Vite Hot Reload not working inside Docker
+- Docker Compose networking and volume configuration
+- AWS EC2 server setup and permissions
+- Environment variable management
+- Docker image cleanup and rebuilds
 
 ---
 
-## 🛠 Useful Docker Commands
+# Useful Commands
 
-Start services
+Start containers
 
 ```bash
 docker compose up -d
 ```
 
-Build & restart
+Build containers
 
 ```bash
 docker compose up -d --build
-```
-
-View running containers
-
-```bash
-docker compose ps
 ```
 
 View logs
@@ -243,13 +202,13 @@ View logs
 docker compose logs -f
 ```
 
-Restart services
+List running containers
 
 ```bash
-docker compose restart
+docker compose ps
 ```
 
-Stop services
+Stop containers
 
 ```bash
 docker compose down
@@ -263,37 +222,18 @@ docker compose down -v
 
 ---
 
-## 🌟 Production Highlights
+# Future Improvements
 
-* MERN Stack application
-* Multi-container Docker architecture
-* Separate development and production Docker configurations
-* NGINX reverse proxy
-* GitHub Actions CI/CD
-* Automated AWS EC2 deployment
-* Environment management with GitHub Secrets
-* SSH-based deployment using `rsync`
-* Docker image cleanup after deployment
-* EC2 bootstrap automation script
+- User Authentication
+- Budget Management
+- Monthly Reports
+- Charts & Analytics
+- HTTPS with SSL
+- MongoDB Atlas
+- Monitoring & Logging
 
 ---
 
-## 🔮 Future Improvements
+# License
 
-* User authentication
-* JWT authorization
-* Budget planning
-* Charts and reports
-* Email notifications
-* HTTPS with SSL
-* MongoDB Atlas
-* Monitoring & logging
-
----
-
-## 📄 License
-
-This project was built for learning, portfolio demonstration, and showcasing production-ready full-stack and DevOps practices.
-
-```
-```
+This project is intended for learning, portfolio demonstration, and showcasing modern full-stack development with Docker and CI/CD.
