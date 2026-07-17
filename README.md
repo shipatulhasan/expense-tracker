@@ -1,471 +1,299 @@
+````markdown
 # Expense Tracker
 
-A classroom-ready **Expense Tracker MERN app** built with:
+A modern **Expense Tracker** built with the **MERN Stack**, fully containerized with **Docker**, and automatically deployed to **AWS EC2** using a **GitHub Actions CI/CD pipeline**.
 
-- **MongoDB** — database
-- **Express.js** — REST API
-- **React + Vite** — frontend
-- **NGINX** — serves the frontend and proxies `/api` to the backend
-- **Docker Compose** — runs the full stack with one command
-
-The UI uses a cyber AI inspired brand style: dark navy background, purple gradients, neon cyan highlights, and glass panels.
+This project demonstrates modern full-stack development, containerization, and production deployment practices.
 
 ---
 
-## Architecture
+## 🚀 Tech Stack
 
-```text
-Browser
-  |
-  v
-Frontend Container: React static files served by NGINX
-  |
-  | /api requests are proxied by NGINX
-  v
-Backend Container: Express.js API
-  |
-  v
-MongoDB Container: persistent database volume
-```
+### Frontend
+- React.js
+- Vite
+- NGINX
+- CSS
+
+### Backend
+- Node.js
+- Express.js
+
+### Database
+- MongoDB
+
+### DevOps
+- Docker
+- Docker Compose
+- GitHub Actions
+- AWS EC2
+- SSH
+- rsync
 
 ---
 
-## Project Structure
+## ✨ Features
+
+- Create, edit and delete expenses
+- Search expenses by title
+- Filter by category
+- Filter by date range
+- Expense summary dashboard
+- Category-wise analytics
+- Export expenses as CSV
+- Responsive UI
+- Dockerized development and production environments
+- Automated deployment to AWS EC2
+
+---
+
+## 🏗️ Architecture
 
 ```text
-expense-tracker-mern/
+                        GitHub Repository
+                               │
+                        Push to main
+                               │
+                     GitHub Actions CI/CD
+                               │
+                        SSH + rsync Deploy
+                               │
+                           AWS EC2
+                               │
+                    Docker Compose Stack
+                               │
+      ┌────────────────┬─────────────────┬────────────────┐
+      │                │                 │
+  Frontend          Backend          MongoDB
+   (NGINX)           Express          Database
+      │
+      └──────────── REST API ─────────────►
+````
+
+---
+
+## 📁 Project Structure
+
+```text
+.
+├── README.md
+├── backend
+│   ├── Dockerfile
+│   ├── Dockerfile.dev
+│   ├── package.json
+│   └── src
+│       ├── models
+│       ├── routes
+│       └── server.js
+│
+├── frontend
+│   ├── Dockerfile
+│   ├── Dockerfile.dev
+│   ├── nginx
+│   │   └── default.conf
+│   ├── package.json
+│   ├── src
+│   └── vite.config.js
+│
+├── scripts
+│   └── ec2.bootstrap.sh
 │
 ├── docker-compose.yml
-├── .env.example
-├── README.md
-│
-├── backend/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── src/
-│       ├── server.js
-│       ├── models/
-│       │   └── Expense.js
-│       └── routes/
-│           └── expenses.js
-│
-└── frontend/
-    ├── Dockerfile
-    ├── package.json
-    ├── index.html
-    ├── nginx/
-    │   └── default.conf
-    └── src/
-        ├── main.jsx
-        └── styles.css
+├── docker-compose-dev.yml
+└── .github
+    └── workflows
+        └── deploy.yml
 ```
 
 ---
 
-## Features
+## ⚙️ Getting Started
 
-- Add expense
-- Edit expense
-- Delete expense
-- Filter by category
-- Search by title
-- Filter by date range
-- Summary cards
-- Category breakdown bars
-- Seed demo data
-- Export visible expenses as CSV
-- Dockerized frontend, backend, and MongoDB
+### Clone the Repository
 
----
+```bash
+git clone https://github.com/<your-username>/expense-tracker.git
+cd expense-tracker
+```
 
-# Run Locally with Docker Compose
-
-From the project root:
+### Run with Docker
 
 ```bash
 docker compose up -d --build
 ```
 
-Open the app:
+Open the application:
 
-```text
+```
 http://localhost
 ```
 
-Check containers:
+### Development Mode
 
 ```bash
-docker compose ps
-```
-
-Check logs:
-
-```bash
-docker compose logs -f
-```
-
-Stop the app:
-
-```bash
-docker compose down
-```
-
-Stop and delete database volume:
-
-```bash
-docker compose down -v
+docker compose -f docker-compose-dev.yml up --build
 ```
 
 ---
 
-# API Endpoints
+## 🐳 Docker Services
 
-Health check:
-
-```bash
-curl http://localhost/api/health
-```
-
-Get expenses:
-
-```bash
-curl http://localhost/api/expenses
-```
-
-Seed demo data:
-
-```bash
-curl -X POST http://localhost/api/expenses/seed
-```
-
-Create expense:
-
-```bash
-curl -X POST http://localhost/api/expenses \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Coffee","amount":4.5,"category":"Food","note":"Morning coffee"}'
-```
+| Service  | Description                       |
+| -------- | --------------------------------- |
+| frontend | React application served by NGINX |
+| backend  | Express.js REST API               |
+| mongo    | MongoDB database                  |
 
 ---
 
-# AWS EC2 Deployment Instruction
+## 📡 API Endpoints
 
-## 1. Create EC2 Instance
+| Method | Endpoint             | Description      |
+| ------ | -------------------- | ---------------- |
+| GET    | `/api/health`        | Health Check     |
+| GET    | `/api/expenses`      | Get all expenses |
+| POST   | `/api/expenses`      | Create expense   |
+| PUT    | `/api/expenses/:id`  | Update expense   |
+| DELETE | `/api/expenses/:id`  | Delete expense   |
+| POST   | `/api/expenses/seed` | Seed sample data |
 
-Recommended settings for classroom demo:
+---
+
+# 🚀 CI/CD Pipeline
+
+Every push to the **main** branch automatically deploys the latest version to an **AWS EC2** instance using **GitHub Actions**.
+
+### Workflow
 
 ```text
-AMI: Ubuntu Server 22.04 LTS or Ubuntu Server 24.04 LTS
-Instance type: t2.micro / t3.micro for demo, t3.small preferred
-Storage: 12 GB or more
+Developer
+    │
+git push origin main
+    │
+GitHub Actions
+    │
+Checkout Repository
+    │
+Configure SSH
+    │
+Bootstrap EC2
+    │
+Sync Files (rsync)
+    │
+Generate .env Files
+    │
+Docker Compose Build
+    │
+Restart Containers
+    │
+Production Updated
 ```
 
-## 2. Configure Security Group
+### Deployment Steps
 
-Inbound rules:
+The GitHub Actions workflow performs the following tasks:
 
-```text
-SSH    22   Your IP only
-HTTP   80   0.0.0.0/0
-```
-
-Optional for debugging only:
-
-```text
-Custom TCP 5000   Your IP only
-Custom TCP 27017  Your IP only, generally avoid exposing MongoDB publicly
-```
-
-For this app, the browser only needs port `80` because NGINX proxies API calls internally.
+* Checks out the latest source code
+* Configures SSH authentication
+* Bootstraps the EC2 instance
+* Synchronizes the project using `rsync`
+* Generates backend and frontend `.env` files from GitHub Secrets
+* Builds Docker images on the EC2 instance
+* Starts or updates containers with Docker Compose
+* Removes unused Docker images and builder cache
 
 ---
 
-## 3. SSH into EC2
+## 🔐 GitHub Secrets
 
-From your laptop:
-
-```bash
-ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
-```
-
----
-
-## 4. Install Docker and Docker Compose Plugin
-
-Run these commands on the EC2 Ubuntu machine:
-
-```bash
-sudo apt update
-sudo apt install -y ca-certificates curl unzip
-```
-
-```bash
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
-  -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-```
-
-```bash
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-```bash
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-Allow the `ubuntu` user to run Docker:
-
-```bash
-sudo usermod -aG docker ubuntu
-exit
-```
-
-SSH again:
-
-```bash
-ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
-```
-
-Verify Docker:
-
-```bash
-docker --version
-docker compose version
-```
+| Secret     | Description                    |
+| ---------- | ------------------------------ |
+| `EC2_HOST` | EC2 public IP or hostname      |
+| `EC2_USER` | EC2 SSH username               |
+| `EC2_SSH`  | Private SSH key                |
+| `APP_DIR`  | Application directory on EC2   |
+| `APP_ENV`  | Backend environment variables  |
+| `WEB_ENV`  | Frontend environment variables |
 
 ---
 
-## 5. Upload Project ZIP to EC2
+## 🛠 Useful Docker Commands
 
-From your laptop, from the folder where the zip exists:
-
-```bash
-scp -i your-key.pem expense-tracker-mern.zip ubuntu@YOUR_EC2_PUBLIC_IP:/home/ubuntu/
-```
-
-SSH into EC2:
-
-```bash
-ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
-```
-
-Unzip:
-
-```bash
-unzip expense-tracker-mern.zip
-cd expense-tracker-mern
-```
-
----
-
-## 6. Start the Full MERN App
-
-```bash
-docker compose up -d --build
-```
-
-Check status:
-
-```bash
-docker compose ps
-```
-
-Check logs:
-
-```bash
-docker compose logs -f
-```
-
-Open in browser:
-
-```text
-http://YOUR_EC2_PUBLIC_IP
-```
-
----
-
-## 7. Test the API on EC2
-
-```bash
-curl http://localhost/api/health
-```
-
-Seed demo data:
-
-```bash
-curl -X POST http://localhost/api/expenses/seed
-```
-
-Refresh the browser.
-
----
-
-## 8. Useful Docker Compose Commands for Students
-
-Show running containers:
-
-```bash
-docker compose ps
-```
-
-View logs:
-
-```bash
-docker compose logs -f backend
-```
-
-Restart one service:
-
-```bash
-docker compose restart backend
-```
-
-Rebuild after code changes:
-
-```bash
-docker compose up -d --build
-```
-
-Stop containers:
-
-```bash
-docker compose down
-```
-
-Stop and remove MongoDB data volume:
-
-```bash
-docker compose down -v
-```
-
----
-
-## 9. Go Inside Containers
-
-Frontend container:
-
-```bash
-docker exec -it expense-frontend sh
-ls /usr/share/nginx/html
-cat /etc/nginx/conf.d/default.conf
-exit
-```
-
-Backend container:
-
-```bash
-docker exec -it expense-backend sh
-ls
-node -v
-exit
-```
-
-MongoDB container:
-
-```bash
-docker exec -it expense-mongo mongosh expense_tracker
-show collections
-db.expenses.find().pretty()
-exit
-```
-
----
-
-## 10. Classroom Explanation
-
-```text
-Dockerfile builds one service image.
-Docker Compose starts the complete application stack.
-```
-
-For this project:
-
-```text
-frontend service:
-  React app is built and served by NGINX.
-
-backend service:
-  Express API connects to MongoDB.
-
-mongo service:
-  Official MongoDB image stores data in a Docker volume.
-```
-
-Best analogy:
-
-```text
-Dockerfile = how to build one room
-Docker Compose = how to run the entire house with all rooms connected
-```
-
----
-
-## 11. Troubleshooting
-
-### Port 80 already in use
-
-Check what is using port 80:
-
-```bash
-sudo lsof -i :80
-```
-
-Stop Apache/NGINX if installed on the host:
-
-```bash
-sudo systemctl stop apache2 || true
-sudo systemctl stop nginx || true
-```
-
-Run Compose again:
+Start services
 
 ```bash
 docker compose up -d
 ```
 
-### Frontend opens but API fails
-
-Check backend logs:
+Build & restart
 
 ```bash
-docker compose logs backend
+docker compose up -d --build
 ```
 
-Check Mongo logs:
+View running containers
 
 ```bash
-docker compose logs mongo
+docker compose ps
 ```
 
-### Rebuild cleanly
+View logs
+
+```bash
+docker compose logs -f
+```
+
+Restart services
+
+```bash
+docker compose restart
+```
+
+Stop services
 
 ```bash
 docker compose down
-docker compose up -d --build
 ```
 
-### Reset all app data
+Remove containers and volumes
 
 ```bash
 docker compose down -v
-docker compose up -d --build
 ```
 
 ---
 
-## Production Notes
+## 🌟 Production Highlights
 
-For a real production deployment, add:
+* MERN Stack application
+* Multi-container Docker architecture
+* Separate development and production Docker configurations
+* NGINX reverse proxy
+* GitHub Actions CI/CD
+* Automated AWS EC2 deployment
+* Environment management with GitHub Secrets
+* SSH-based deployment using `rsync`
+* Docker image cleanup after deployment
+* EC2 bootstrap automation script
 
-- HTTPS with NGINX reverse proxy or AWS ALB + ACM certificate
-- Authentication and authorization
-- MongoDB Atlas or managed database
-- CI/CD pipeline
-- Environment-specific secrets
-- Backups for database volume
-- Monitoring and log collection
+---
+
+## 🔮 Future Improvements
+
+* User authentication
+* JWT authorization
+* Budget planning
+* Charts and reports
+* Email notifications
+* HTTPS with SSL
+* MongoDB Atlas
+* Monitoring & logging
+
+---
+
+## 📄 License
+
+This project was built for learning, portfolio demonstration, and showcasing production-ready full-stack and DevOps practices.
+
+```
+```
